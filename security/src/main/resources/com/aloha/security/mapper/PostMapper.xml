@@ -25,6 +25,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE no = #{no}
     </select>
 
+    <!-- 조회 - id -->
+    <select id="selectById" resultType="Posts">
+        SELECT *
+        FROM posts
+        WHERE id = #{id}
+    </select>
+
     <!-- 등록 -->
     <insert id="insert">
         INSERT INTO posts ( id, title, writer, content )
