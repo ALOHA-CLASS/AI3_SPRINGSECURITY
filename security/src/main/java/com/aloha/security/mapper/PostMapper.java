@@ -18,11 +18,17 @@ public interface PostMapper {
     public long count() throws Exception;
     // 조회
     public Posts select(Integer no) throws Exception;
+    // 조회 - id
+    public Posts selectById(String id) throws Exception;
     // 등록
     public int insert(Posts post) throws Exception;
     // 수정
     public int update(Posts post) throws Exception;
+    // 수정 - id
+    public int updateById(Posts post) throws Exception;
     // 삭제
     public int delete(Integer no) throws Exception;
+    // 삭제 - id
+    public int deleteById(String id) throws Exception;
     
 }

@@ -62,5 +62,21 @@ public class PostServiceImpl implements PostService {
         PageInfo<Posts> pageInfo = new PageInfo<>(list, 10);
         return pageInfo;
     }
+
+    @Override
+    public Posts selectById(String id) throws Exception {
+        Posts post = postMapper.selectById(id);
+        return post;
+    }
+
+    @Override
+    public boolean updateById(Posts post) throws Exception {
+        return postMapper.updateById(post) > 0;
+    }
+    
+    @Override
+    public boolean deleteById(String id) throws Exception {
+        return postMapper.deleteById(id) > 0;
+    }
     
 }

@@ -20,10 +20,12 @@ public class Posts {
     private Long no;
     private String id;
     private String title;
-    private String writer;
+    private Long userNo;
     private String content;
     private Date createdAt;
     private Date updatedAt;
+
+    private Users user;
 
     public Posts() {
         this.id = UUID.randomUUID().toString();
