@@ -7,10 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -24,7 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
-@EnableWebSecurity              // 해당 클래스를 스프링 시큐리티 설정 빈으로 등록
+@EnableWebSecurity  // 해당 클래스를 스프링 시큐리티 설정 빈으로 등록
+                    // @Secured / @PreAuthorized, @PostAuthorized 으로 메서드 권한 제어 활성화
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -51,6 +52,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         // ✅ 인가 설정
+        
         http.authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/user", "/user/**").hasAnyRole("USER","ADMIN")
@@ -79,7 +81,7 @@ public class SecurityConfig {
                                             // 예외 처리 페이지 설정
                                             // .accessDeniedPage("/exception")
                                             // 접근 거부 핸들러 설정
-                                            .accessDeniedHandler(null)
+                                            .accessDeniedHandler(customAccessDeniedHandler)
 
                                 );                           
 
@@ -91,6 +93,15 @@ public class SecurityConfig {
                 .key("aloha")
                 .tokenRepository(tokenRepository())
                 .tokenValiditySeconds(60 * 60 * 24 * 7));
+
+        // 🔓 로그아웃 설정
+        http.logout(logout -> logout
+                            .logoutUrl("/logout")   // 로그아웃 요청 경로
+                            .logoutSuccessUrl("/login?logout=true") // 로그아웃 성공 시 URL
+                            .invalidateHttpSession(true)        // 세션 초기화
+                            .deleteCookies("remember-id")       // 로그아웃 시, 아이디저장 쿠키 삭제
+                            // .logoutSuccessHandler(null)         // 로그아웃 성공 핸들러 설정
+                    );
 
         return http.build();
     }
